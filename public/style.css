@@ -1,0 +1,329 @@
+/* style.css — LibreService · identité « Équateur »
+   Couleurs du drapeau gabonais (vert forêt, soleil, Atlantique) + trame de losanges façon raffia.
+   Aucune image : tout est en CSS, donc léger sur les connexions lentes. */
+
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap");
+
+:root {
+  --foret: #0a4f36;
+  --foret-vif: #009e60;
+  --soleil: #fcd116;
+  --soleil-texte: #7a5c00;
+  --atlantique: #1f5fa8;
+  --kaolin: #f4f6f0;
+  --laterite: #b8472b;
+  --encre: #13291f;
+  --encre-douce: #566a60;
+  --trait: #d9e1d6;
+  --carte: #ffffff;
+  --rayon-carte: 16px;
+  --rayon-bouton: 10px;
+  --police-titre: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --police-texte: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --drapeau: linear-gradient(90deg, var(--foret-vif) 0 33.34%, var(--soleil) 33.34% 66.67%, var(--atlantique) 66.67% 100%);
+
+  /* Alias conservés : les pages existantes utilisent encore ces noms */
+  --couleur-primaire: var(--foret);
+  --couleur-primaire-fonce: #073b28;
+  --couleur-accent: var(--soleil);
+  --couleur-texte: var(--encre);
+  --couleur-texte-clair: var(--encre-douce);
+  --couleur-bordure: var(--trait);
+  --couleur-danger: var(--laterite);
+  --couleur-succes: #17794a;
+  --rayon: var(--rayon-carte);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--kaolin);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  line-height: 1.55;
+}
+
+h1, h2, h3, .logo, .stat-carte .valeur { font-family: var(--police-titre); letter-spacing: -0.01em; }
+
+a { color: var(--atlantique); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; display: block; }
+
+:focus-visible { outline: 3px solid var(--atlantique); outline-offset: 2px; }
+
+.conteneur { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0 18px; }
+
+/* --- En-tête : vert forêt + bande aux trois couleurs du drapeau --- */
+header.entete {
+  background: var(--foret);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+header.entete::after { content: ""; display: block; height: 5px; background: var(--drapeau); }
+header.entete .conteneur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.logo { font-size: 1.3rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 9px; }
+.logo:hover { text-decoration: none; }
+.logo svg { flex-shrink: 0; }
+nav.nav-principale { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; font-size: 0.92rem; font-weight: 500; }
+nav.nav-principale a, nav.nav-principale button.lien {
+  color: #fff;
+  padding: 6px 11px;
+  border-radius: 999px;
+  opacity: 0.88;
+}
+nav.nav-principale a:hover, nav.nav-principale button.lien:hover { background: rgba(255,255,255,0.14); opacity: 1; text-decoration: none; }
+nav.nav-principale a.actif { background: rgba(255,255,255,0.18); font-weight: 700; opacity: 1; }
+nav.nav-principale a.btn.accent { opacity: 1; padding: 7px 14px; border-radius: 999px; }
+button.lien { background: none; border: none; font: inherit; cursor: pointer; }
+
+/* --- Boutons --- */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: var(--rayon-bouton);
+  border: 2px solid var(--foret);
+  background: var(--foret);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.97rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn:hover { background: #073b28; text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn.secondaire { background: transparent; color: var(--foret); }
+.btn.secondaire:hover { background: #e6efe8; }
+.btn.accent { background: var(--soleil); border-color: var(--soleil); color: #2b2200; }
+.btn.accent:hover { background: #e9bf08; border-color: #e9bf08; }
+.btn.danger { background: var(--laterite); border-color: var(--laterite); }
+.btn.danger:hover { background: #983a22; }
+.btn.pleine-largeur { width: 100%; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* --- Cartes : trait fin + liseré bas, pas d'ombre floue --- */
+.carte {
+  background: var(--carte);
+  border: 1px solid var(--trait);
+  border-bottom-width: 3px;
+  border-radius: var(--rayon-carte);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+/* --- Formulaires --- */
+.champ { margin-bottom: 15px; }
+.champ label { display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+.champ input, .champ select, .champ textarea {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1.5px solid #b9c7bd;
+  border-radius: var(--rayon-bouton);
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--encre);
+}
+.champ input:focus, .champ select:focus, .champ textarea:focus { outline: 3px solid rgba(31,95,168,0.35); border-color: var(--atlantique); }
+.champ textarea { resize: vertical; min-height: 96px; }
+.champ .aide { font-size: 0.82rem; color: var(--encre-douce); margin-top: 4px; }
+
+/* --- Accueil : héro vert à trame de losanges, soleil qui se lève sur la ligne bleue --- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  padding: 44px 0 58px;
+  background-color: var(--foret);
+  background-image:
+    linear-gradient(135deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(255,255,255,0.06) 25%, var(--foret) 25%);
+  background-size: 30px 30px;
+  background-position: 15px 0, 15px 0, 0 0, 0 0;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  right: -70px;
+  bottom: -150px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--soleil);
+  animation: lever-soleil 1.1s ease-out both;
+}
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: var(--atlantique); }
+@keyframes lever-soleil { from { transform: translateY(150px); } to { transform: translateY(0); } }
+.hero .conteneur { position: relative; z-index: 1; }
+.hero h1 { font-size: clamp(1.9rem, 5.5vw, 3.1rem); font-weight: 800; line-height: 1.08; margin: 0 0 12px; max-width: 16em; }
+.hero p { margin: 0 0 26px; font-size: 1.05rem; max-width: 34em; color: #e3f1e8; }
+.recherche-rapide {
+  background: #fff;
+  color: var(--encre);
+  border-radius: var(--rayon-carte);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 760px;
+}
+.recherche-rapide select {
+  width: 100%;
+  padding: 13px;
+  border: 1.5px solid #b9c7bd;
+  border-radius: var(--rayon-bouton);
+  font: inherit;
+  background: #fff;
+  color: var(--encre);
+}
+
+/* --- Catégories : liseré en haut qui reprend les couleurs du drapeau --- */
+.grille-categories { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 18px; }
+.carte-categorie {
+  background: var(--carte);
+  border: 1px solid var(--trait);
+  border-top: 5px solid var(--foret-vif);
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  color: var(--encre);
+  transition: transform 0.12s;
+}
+.carte-categorie:nth-child(3n+2) { border-top-color: var(--soleil); }
+.carte-categorie:nth-child(3n) { border-top-color: var(--atlantique); }
+.carte-categorie:hover { text-decoration: none; transform: translateY(-3px); border-color: var(--foret); }
+.carte-categorie .emoji { font-size: 1.9rem; margin-bottom: 6px; }
+.carte-categorie .titre { font-family: var(--police-titre); font-weight: 700; font-size: 1rem; }
+.carte-categorie .exemples { font-size: 0.8rem; color: var(--encre-douce); margin-top: 3px; }
+
+/* --- Comment ça marche (vraie séquence : 3 étapes) --- */
+.etapes { display: grid; gap: 12px; margin: 14px 0 0; padding: 0; list-style: none; counter-reset: etape; }
+.etapes li { counter-increment: etape; background: var(--carte); border: 1px solid var(--trait); border-radius: 14px; padding: 16px 16px 16px 62px; position: relative; }
+.etapes li::before {
+  content: counter(etape);
+  position: absolute; left: 14px; top: 14px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--foret); color: #fff;
+  font-family: var(--police-titre); font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.etapes strong { display: block; font-family: var(--police-titre); }
+.etapes span { color: var(--encre-douce); font-size: 0.92rem; }
+
+/* --- Bandeau prestataire --- */
+.bandeau-prestataire {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  background: var(--soleil);
+  border-radius: var(--rayon-carte);
+  padding: 22px;
+  color: #2b2200;
+}
+.bandeau-prestataire strong { font-family: var(--police-titre); font-size: 1.2rem; }
+.bandeau-prestataire p { margin: 4px 0 0; font-size: 0.95rem; }
+.bandeau-prestataire .btn { background: var(--foret); border-color: var(--foret); color: #fff; }
+
+/* --- Liste des prestataires --- */
+.liste-prestataires { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.carte-prestataire {
+  display: flex; gap: 14px;
+  background: var(--carte);
+  border: 1px solid var(--trait);
+  border-left: 5px solid var(--foret-vif);
+  border-radius: 14px;
+  padding: 14px;
+  color: var(--encre);
+}
+.carte-prestataire:hover { text-decoration: none; border-color: var(--foret); border-left-color: var(--soleil); }
+.carte-prestataire .photo, .entete-fiche .photo-grande {
+  object-fit: cover; background: #e6efe8; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: var(--foret);
+}
+.carte-prestataire .photo { width: 72px; height: 72px; border-radius: 12px; font-size: 1.7rem; }
+.carte-prestataire .infos { flex: 1; min-width: 0; }
+.carte-prestataire .nom { font-family: var(--police-titre); font-weight: 700; font-size: 1.05rem; }
+.carte-prestataire .metier { color: var(--foret); font-size: 0.9rem; font-weight: 700; }
+.carte-prestataire .meta { font-size: 0.84rem; color: var(--encre-douce); margin-top: 2px; }
+.note { color: var(--soleil-texte); font-weight: 700; white-space: nowrap; }
+
+/* --- Fiche prestataire --- */
+.entete-fiche { display: flex; gap: 18px; align-items: center; }
+.entete-fiche .photo-grande { width: 104px; height: 104px; border-radius: 16px; font-size: 2.5rem; }
+.badge { display: inline-block; font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #dff3e6; color: var(--couleur-succes); }
+.badge.attente { background: #fdf0c4; color: var(--soleil-texte); }
+.badge.refuse { background: #f8e1da; color: var(--laterite); }
+.avis-item { border-top: 1px solid var(--trait); padding: 13px 0; }
+.avis-item:first-child { border-top: none; padding-top: 0; }
+.avis-item .etoiles { color: var(--soleil-texte); font-weight: 700; }
+.avis-item .auteur { font-weight: 700; font-size: 0.9rem; }
+.avis-item .date { font-size: 0.78rem; color: var(--encre-douce); }
+
+/* --- Messagerie --- */
+.conversation-item { display: flex; justify-content: space-between; padding: 14px; border-radius: 14px; background: var(--carte); border: 1px solid var(--trait); margin-bottom: 10px; color: var(--encre); }
+.conversation-item:hover { text-decoration: none; border-color: var(--foret); }
+.bulle-non-lu { background: var(--soleil); color: #2b2200; border-radius: 999px; font-size: 0.74rem; padding: 2px 9px; font-weight: 700; }
+.fil-messages { display: flex; flex-direction: column; gap: 8px; padding: 16px 0; }
+.message-bulle { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 0.95rem; }
+.message-bulle.recu { background: #fff; border: 1px solid var(--trait); align-self: flex-start; border-bottom-left-radius: 4px; }
+.message-bulle.envoye { background: var(--foret); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.message-bulle .heure { font-size: 0.7rem; opacity: 0.7; display: block; margin-top: 3px; }
+.zone-saisie { display: flex; gap: 8px; padding: 10px 0; position: sticky; bottom: 0; background: var(--kaolin); }
+.zone-saisie input { flex: 1; }
+
+/* --- Back-office --- */
+table.tableau-admin { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.tableau-admin th, table.tableau-admin td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--trait); }
+table.tableau-admin th { color: var(--encre-douce); font-size: 0.82rem; font-weight: 700; }
+.grille-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.stat-carte { background: var(--carte); border: 1px solid var(--trait); border-bottom: 4px solid var(--foret-vif); border-radius: 14px; padding: 14px; text-align: center; }
+.stat-carte:nth-child(3n+2) { border-bottom-color: var(--soleil); }
+.stat-carte:nth-child(3n) { border-bottom-color: var(--atlantique); }
+.stat-carte .valeur { font-size: 1.8rem; font-weight: 800; color: var(--foret); }
+.stat-carte .label { font-size: 0.8rem; color: var(--encre-douce); margin-top: 2px; }
+.onglets { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.onglet { padding: 8px 15px; border-radius: 999px; background: #fff; border: 1.5px solid var(--trait); cursor: pointer; font: inherit; font-size: 0.88rem; font-weight: 700; color: var(--encre-douce); }
+.onglet.actif { background: var(--foret); color: #fff; border-color: var(--foret); }
+
+/* --- Messages d'état --- */
+.alerte { padding: 12px 14px; border-radius: 10px; font-size: 0.92rem; margin-bottom: 14px; border-left: 5px solid; }
+.alerte.erreur { background: #f8e1da; color: #7e2b16; border-color: var(--laterite); }
+.alerte.succes { background: #dff3e6; color: #0f5c37; border-color: var(--foret-vif); }
+.vide { text-align: center; color: var(--encre-douce); padding: 32px 10px; font-size: 0.95rem; }
+
+.section-titre { font-size: 1.35rem; font-weight: 800; margin: 30px 0 12px; }
+
+/* --- Pied de page --- */
+.pied { margin-top: 40px; text-align: center; color: #d5e7db; background: var(--foret); font-size: 0.85rem; padding: 26px 0 30px; position: relative; }
+.pied::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--drapeau); }
+
+/* --- Écrans plus larges --- */
+@media (min-width: 640px) {
+  .grille-categories { grid-template-columns: repeat(3, 1fr); }
+  .grille-stats { grid-template-columns: repeat(4, 1fr); }
+  .recherche-rapide { flex-direction: row; align-items: stretch; }
+  .recherche-rapide select { flex: 1; }
+  .recherche-rapide .btn { width: auto; padding-left: 26px; padding-right: 26px; }
+  .etapes { grid-template-columns: repeat(3, 1fr); }
+  .liste-prestataires { grid-template-columns: repeat(2, 1fr); }
+  .hero::before { right: 6%; width: 380px; height: 380px; bottom: -190px; }
+}
+@media (min-width: 960px) { .grille-categories { grid-template-columns: repeat(6, 1fr); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before { animation: none; }
+  .carte-categorie, .btn { transition: none; }
+}

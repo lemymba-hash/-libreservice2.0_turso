@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back-office — LibreService</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body data-page="admin">
+<header class="entete" id="entete"></header>
+
+<main class="conteneur" id="contenu">
+  <p class="vide">Chargement…</p>
+</main>
+
+<script src="/js/app.js"></script>
+<script>
+const user = Session.getUser();
+if (!user || user.role !== 'admin') {
+  window.location.href = '/pages/connexion.html?retour=' + encodeURIComponent('/pages/admin.html');
+}
+
+const contenu = document.getElementById('contenu');
+let ongletActif = 'stats';
+
+async function chargerStats() {
+  const s = await api('/admin/statistiques');
+  return `
+    <div class="grille-stats">
+      <div class="stat-carte"><div class="valeur">${s.nb_clients}</div><div class="label">Clients inscrits</div></div>
+      <div class="stat-carte"><div class="valeur">${s.nb_prestataires_inscrits}</div><div class="label">Prestataires inscrits</div></div>
+      <div class="stat-carte"><div class="valeur">${s.nb_prestataires_valides}</div><div class="label">Prestataires validés</div></div>
+      <div class="stat-carte"><div class="valeur">${s.nb_prestataires_en_attente}</div><div class="label">En attente</div></div>
+      <div class="stat-carte"><div class="valeur">${s.nb_mises_en_relation}</div><div class="label">Mises en relation</div></div>
+      <div class="stat-carte"><div class="valeur">${s.nb_messages}</div><div class="label">Messages échangés</div></div>
+      <div class="stat-carte"><div class="valeur">${s.nb_avis}</div><div class="label">Avis publiés</div></div>
+      <div class="stat-carte"><div class="valeur">${s.note_moyenne_globale ?? '—'}</div><div class="label">Note moyenne globale</div></div>
+    </div>
+  `;
+}
+
+async function chargerPrestataires(statut) {
+  const { prestataires } = await api('/admin/prestataires?statut=' + statut);
+  if (prestataires.length === 0) return '<p class="vide">Aucun prestataire dans cette catégorie.</p>';
+
+  return `
+    <table class="tableau-admin">
+      <thead><tr><th>Nom</th><th>Métier</th><th>Quartier</th><th>Téléphone</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${prestataires.map(p => `
+          <tr>
+            <td>${echapperHtml(p.nom)}</td>
+            <td>${echapperHtml(p.metier)}</td>
+            <td>${echapperHtml(p.quartier || '—')}</td>
+            <td>${echapperHtml(p.telephone)}</td>
+            <td>
+              ${statut !== 'valide' ? `<button class="btn" style="padding:6px 10px; font-size:0.78rem;" onclick="changerStatutPrestataire(${p.id}, 'valide')">Valider</button>` : ''}
+              ${statut !== 'refuse' ? `<button class="btn danger" style="padding:6px 10px; font-size:0.78rem;" onclick="changerStatutPrestataire(${p.id}, 'refuse')">Refuser</button>` : ''}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function chargerAvisSignales() {
+  const { avis } = await api('/admin/avis?statut=signale');
+  if (avis.length === 0) return '<p class="vide">Aucun avis signalé.</p>';
+
+  return `
+    <table class="tableau-admin">
+      <thead><tr><th>Client</th><th>Prestataire</th><th>Note</th><th>Commentaire</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${avis.map(a => `
+          <tr>
+            <td>${echapperHtml(a.client_nom)}</td>
+            <td>${echapperHtml(a.metier)}</td>
+            <td>${a.note}/5</td>
+            <td>${echapperHtml(a.commentaire || '—')}</td>
+            <td>
+              <button class="btn" style="padding:6px 10px; font-size:0.78rem;" onclick="changerStatutAvis(${a.id}, 'visible')">Garder</button>
+              <button class="btn danger" style="padding:6px 10px; font-size:0.78rem;" onclick="changerStatutAvis(${a.id}, 'masque')">Masquer</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function chargerUtilisateurs() {
+  const { utilisateurs } = await api('/admin/utilisateurs');
+  return `
+    <table class="tableau-admin">
+      <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Quartier</th></tr></thead>
+      <tbody>
+        ${utilisateurs.map(u => `
+          <tr>
+            <td>${echapperHtml(u.nom)}</td>
+            <td>${echapperHtml(u.email)}</td>
+            <td>${echapperHtml(u.role)}</td>
+            <td>${echapperHtml(u.quartier || '—')}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function changerStatutPrestataire(id, statut) {
+  try {
+    await api('/admin/prestataires/' + id + '/statut', { method: 'PUT', body: JSON.stringify({ statut }) });
+    render();
+  } catch (e) { alert(e.message); }
+}
+
+async function changerStatutAvis(id, statut) {
+  try {
+    await api('/admin/avis/' + id + '/statut', { method: 'PUT', body: JSON.stringify({ statut }) });
+    render();
+  } catch (e) { alert(e.message); }
+}
+
+function onglets() {
+  const defs = [
+    { id: 'stats', label: '📊 Statistiques' },
+    { id: 'attente', label: '⏳ À valider' },
+    { id: 'valide', label: '✓ Validés' },
+    { id: 'refuse', label: '✗ Refusés' },
+    { id: 'avis', label: '⚠️ Avis signalés' },
+    { id: 'utilisateurs', label: '👥 Utilisateurs' },
+  ];
+  return `<div class="onglets">${defs.map(d => `<button class="onglet ${d.id === ongletActif ? 'actif' : ''}" onclick="changerOnglet('${d.id}')">${d.label}</button>`).join('')}</div>`;
+}
+
+async function render() {
+  contenu.innerHTML = `
+    <h1 class="section-titre" style="margin-top:20px;">Back-office administrateur</h1>
+    ${onglets()}
+    <div id="zone-onglet"><p class="vide">Chargement…</p></div>
+  `;
+
+  const zone = document.getElementById('zone-onglet');
+  try {
+    if (ongletActif === 'stats') zone.innerHTML = await chargerStats();
+    else if (ongletActif === 'attente') zone.innerHTML = '<div class="carte">' + await chargerPrestataires('en_attente') + '</div>';
+    else if (ongletActif === 'valide') zone.innerHTML = '<div class="carte">' + await chargerPrestataires('valide') + '</div>';
+    else if (ongletActif === 'refuse') zone.innerHTML = '<div class="carte">' + await chargerPrestataires('refuse') + '</div>';
+    else if (ongletActif === 'avis') zone.innerHTML = '<div class="carte">' + await chargerAvisSignales() + '</div>';
+    else if (ongletActif === 'utilisateurs') zone.innerHTML = '<div class="carte">' + await chargerUtilisateurs() + '</div>';
+  } catch (e) {
+    zone.innerHTML = `<div class="alerte erreur">${echapperHtml(e.message)}</div>`;
+  }
+}
+
+function changerOnglet(id) {
+  ongletActif = id;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
